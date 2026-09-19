@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 export const AdminBarClient: React.FC<PayloadAdminBarProps> = (props) => {
   const router = useRouter()
 
-  function onPreviewExitAction() {
+  function onPreviewExit() {
     fetch("/next/exit-preview").then(() => {
       router.push("/")
       router.refresh()
@@ -32,7 +32,7 @@ export const AdminBarClient: React.FC<PayloadAdminBarProps> = (props) => {
       }}
       cmsURL={getClientSideURL()}
       logo={<PaperIcon className="size-4" />}
-      onPreviewExitAction={onPreviewExitAction}
+      onPreviewExit={onPreviewExit}
     />
   )
 }
