@@ -144,25 +144,27 @@ body if the size is uncertain.
 
 ### Setting fields
 
-Use the helper next to this file. It looks every ID up by name when it runs
-(project, board item, field, option), so nothing goes stale, and it adds the
-issue to the board if it's missing:
+Use the helper next to this file, from the repo root. One GraphQL query looks
+up the project, the issue's board item, and every field and option by name, so
+nothing goes stale, and it adds the issue to the board if it's missing:
 
 ```bash
-.claude/skills/github-issues/set-project-field.sh 953 Priority P2
-.claude/skills/github-issues/set-project-field.sh 953 Size M
-.claude/skills/github-issues/set-project-field.sh 953 Estimate 3
-.claude/skills/github-issues/set-project-field.sh 953 Status Ready
-.claude/skills/github-issues/set-project-field.sh 953 Priority --clear
+pnpm tsx .claude/skills/github-issues/set-project-field.ts 953 Priority P2
+pnpm tsx .claude/skills/github-issues/set-project-field.ts 953 Size M
+pnpm tsx .claude/skills/github-issues/set-project-field.ts 953 Estimate 3
+pnpm tsx .claude/skills/github-issues/set-project-field.ts 953 Status Ready
+pnpm tsx .claude/skills/github-issues/set-project-field.ts 953 Priority --clear
 ```
 
-A misspelled field or option fails with the list of valid names, and fields
-the board only mirrors (Labels, Assignees…) are refused with a pointer to
-`gh issue edit`.
+It checks the edit before touching the board: a misspelled field or option
+fails with the list of valid names, `Estimate` must be a number and dates
+`YYYY-MM-DD`, and fields the board only mirrors (Labels, Assignees…) are
+refused with a pointer to `gh issue edit`. Tests live in
+`tests/scripts/set-project-field.test.ts`.
 
 To read an issue's current board values:
-`gh issue view <n> --json projectItems` (shows `Status`); the helper's
-GraphQL query in the script is the pattern for reading the other fields.
+`gh issue view <n> --json projectItems` (shows `Status`); the `QUERY` in the
+helper is the pattern for reading the other fields.
 
 **Requirements:** a current `gh` (tested with 2.101) and the **`project`** token scope. Without the
 scope, `gh project` fails with `missing required scopes [read:project]`. Add
