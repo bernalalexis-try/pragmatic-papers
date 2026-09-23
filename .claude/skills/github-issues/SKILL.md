@@ -1,16 +1,19 @@
 ---
 name: github-issues
-description: File, triage, or label a GitHub issue in this repo the way we do it — apply an issue TYPE (Bug/Feature/Task) and the right LABELS. Use whenever creating, editing, triaging, or bulk-labeling issues, or when adding/renaming/removing a label. Covers the "Bug is a type not a label" gotcha, the gh-can't-set-type gotcha, and the version-controlled label taxonomy in .github/labels.yml.
+description: File, triage, or label a GitHub issue in this repo the way we do it — apply an issue TYPE (Bug/Feature/Task), the right LABELS, and the Project board fields (Status/Priority/Size/Estimate). Use whenever creating, editing, triaging, prioritizing, sizing, or bulk-labeling issues, moving an issue on the board, or adding/renaming/removing a label. Covers the "Bug is a type not a label" gotcha, the gh-can't-set-type gotcha, the version-controlled label taxonomy in .github/labels.yml, and a helper that sets board fields by name.
 ---
 
 # Filing & triaging GitHub issues
 
-This repo classifies issues on **two independent axes**. Set both.
+This repo classifies issues on **three independent axes**. Set all three.
 
 1. **Issue type** — `Bug` · `Feature` · `Task`. Org-level metadata, exactly
    one per issue. This is _not_ a label.
 2. **Labels** — the taxonomy in `.github/labels.yml` (area, status, kind…).
    Zero or more per issue.
+3. **Project board fields** — `Priority`, `Size`, `Estimate` and `Status` on
+   the org board **"Pragmatic Papers Development"** (project #3). See
+   [Project board fields](#project-board-fields).
 
 The single most common mistake: treating `Bug` as a label. **There is no
 `bug` label** — `Bug` is an issue _type_. Applying a nonexistent label
@@ -107,6 +110,73 @@ Keep the label set minimal — a Kind and/or a Status is usually enough. The
 issue **type** (`Bug` / `Feature` / `Task`) already says what kind of work it
 is, so labels only need to add what the type doesn't.
 
+## Project board fields
+
+Issues live on the org Project **"Pragmatic Papers Development"**
+(`https://github.com/orgs/digitalgroundgame/projects/3`). The board's
+built-in workflows are all on, so some things happen without you:
+
+- **New issues are added automatically** with `Status: Backlog`. Don't add them
+  by hand.
+- **Closing an issue or merging its PR moves it to `Done`**; reopening, linking
+  a PR, and review requests also move items. Leave those transitions to the
+  board.
+- **PRs are not tracked on the board.** Only issues. Don't add PRs.
+
+### Fields and how we use them
+
+| Field                     | Values                                                                    | Convention                                                                                                                                  |
+| ------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Status`                  | `Backlog` · `Ready` · `In progress` · `In review` · `Needs Work` · `Done` | Set `Ready` when an issue is scoped and can be picked up, `In progress` when work starts. `In review` / `Needs Work` exist but aren't used. |
+| `Priority`                | `P0` · `P1` · `P2` · `P3`                                                 | Set on every open issue.                                                                                                                    |
+| `Size`                    | `XS` · `S` · `M` · `L` · `XL`                                             | Set on every open issue, together with `Estimate`.                                                                                          |
+| `Estimate`                | story points (number)                                                     | Follows `Size`: **XS = 0.5 or 1, S = 2, M = 3, L = 5, XL = 8**. Never set without `Size`.                                                   |
+| `Start date` / `End date` | date                                                                      | Not used. Leave empty.                                                                                                                      |
+
+Assignees, labels, milestone, parent issue and linked PRs are issue attributes
+the board only displays. Set those on the issue (`gh issue edit`), not on the
+board.
+
+**At filing time**, after type and labels, set your best guess for
+`Priority`, `Size` and `Estimate`, and leave `Status` at `Backlog` unless the
+issue is ready to pick up. As with labels, guess rather than defer; say in the
+body if the size is uncertain.
+
+### Setting fields
+
+Use the helper next to this file. It looks every ID up by name when it runs
+(project, board item, field, option), so nothing goes stale, and it adds the
+issue to the board if it's missing:
+
+```bash
+.claude/skills/github-issues/set-project-field.sh 953 Priority P2
+.claude/skills/github-issues/set-project-field.sh 953 Size M
+.claude/skills/github-issues/set-project-field.sh 953 Estimate 3
+.claude/skills/github-issues/set-project-field.sh 953 Status Ready
+.claude/skills/github-issues/set-project-field.sh 953 Priority --clear
+```
+
+A misspelled field or option fails with the list of valid names, and fields
+the board only mirrors (Labels, Assignees…) are refused with a pointer to
+`gh issue edit`.
+
+To read an issue's current board values:
+`gh issue view <n> --json projectItems` (shows `Status`); the helper's
+GraphQL query in the script is the pattern for reading the other fields.
+
+**Requirements:** a current `gh` (tested with 2.101) and the **`project`** token scope. Without the
+scope, `gh project` fails with `missing required scopes [read:project]`. Add
+it in a real terminal (the browser device flow needs one; Claude Code's `!`
+prefix doesn't provide it):
+
+```bash
+gh auth refresh -h github.com -s project
+```
+
+In web/remote sessions without `gh`, use the GitHub MCP server's project tools
+if the session has them, with the same field and option names; otherwise note
+the intended values in the issue body for a maintainer to apply.
+
 ## Closing issues
 
 Always set a reason. MCP: `issue_write(method="update", state="closed",
@@ -120,3 +190,5 @@ For `duplicate`/`invalid`/`wontfix`, add the matching label too.
 - [ ] Best-guess labels applied — a Kind label if it's obviously docs / deps,
       plus any status that's clear. Guess rather than defer.
 - [ ] Every label used exists in `.github/labels.yml`.
+- [ ] `Priority`, `Size` and the matching `Estimate` set on the board
+      (the issue is added as `Backlog` automatically).
