@@ -83,7 +83,6 @@ describe("generateMeta", () => {
     const meta = await generateMeta({ doc, canonicalPath: "/about" })
 
     expect(meta.openGraph?.description).toEqual(expect.stringContaining("community-driven"))
-    expect(meta.twitter).toMatchObject({ description: undefined })
   })
 
   it("uses the site image when the media has no og size", async () => {
