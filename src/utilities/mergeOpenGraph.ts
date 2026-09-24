@@ -16,9 +16,14 @@ const defaultOpenGraph: Metadata["openGraph"] = {
 }
 
 export const mergeOpenGraph = (og?: Metadata["openGraph"]): Metadata["openGraph"] => {
+  const images = og?.images
+  // An empty list is truthy but shares the page with no image at all, so it
+  // falls back to the default the same as an unset one.
+  const hasImages = Array.isArray(images) ? images.length > 0 : Boolean(images)
+
   return {
     ...defaultOpenGraph,
     ...og,
-    images: og?.images ? og.images : defaultOpenGraph.images,
+    images: hasImages ? images : defaultOpenGraph.images,
   }
 }

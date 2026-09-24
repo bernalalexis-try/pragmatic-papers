@@ -39,4 +39,15 @@ describe("mergeOpenGraph", () => {
   it("keeps the default image when images is left unset", () => {
     expect(mergeOpenGraph({ title: "Topics", images: undefined })?.images).toEqual(DEFAULT_IMAGES)
   })
+
+  it("keeps the default image when given an empty images list", () => {
+    expect(mergeOpenGraph({ title: "Topics", images: [] })?.images).toEqual(DEFAULT_IMAGES)
+  })
+
+  it.each([
+    ["a single image object", { url: "https://example.com/cover.png", alt: "Cover" }],
+    ["a single image URL", "https://example.com/cover.png"],
+  ])("passes %s through unchanged", (_, image) => {
+    expect(mergeOpenGraph({ images: image })?.images).toBe(image)
+  })
 })
