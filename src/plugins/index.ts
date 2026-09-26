@@ -46,8 +46,9 @@ export const generateTitle: GenerateTitle<Volume | Article | Page | Topic> = ({ 
   return "The Pragmatic Papers"
 }
 
-export const generateDescription: GenerateDescription<Volume | Article | Page | Topic> = () =>
-  DEFAULT_DESCRIPTION
+export const generateDescription: GenerateDescription<Volume | Article | Page | Topic> = ({
+  doc,
+}) => ("description" in doc && doc.description) || DEFAULT_DESCRIPTION
 
 const generateURL: GenerateURL<Volume | Article | Page | Topic> = ({ doc }) => {
   const url = getServerSideURL()

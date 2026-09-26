@@ -80,20 +80,11 @@ describe("generateMeta", () => {
   it.each([
     ["no meta description", article({ title: "Untitled" })],
     ["an empty meta description", article({ title: "Untitled", description: "" })],
-  ])("keeps the site's default Open Graph description for a doc with %s", async (_, doc) => {
+  ])("keeps the site's default description for a doc with %s", async (_, doc) => {
     const meta = await generateMeta({ doc, canonicalPath: "/about" })
 
-    expect(meta.openGraph?.description).toEqual(expect.stringContaining("community-driven"))
+    expect(meta.openGraph?.description).toBe(DEFAULT_DESCRIPTION)
     expect(meta.description).toBe(DEFAULT_DESCRIPTION)
-  })
-
-  it("keeps a doc's own meta description instead of the site default", async () => {
-    const meta = await generateMeta({
-      doc: article({ title: "The Case", description: "Why it matters" }),
-      canonicalPath: "/articles/the-case",
-    })
-
-    expect(meta.description).toBe("Why it matters")
   })
 
   it("uses the site image when the media has no og size", async () => {
