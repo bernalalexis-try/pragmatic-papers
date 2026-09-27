@@ -137,6 +137,18 @@ const beforeSync: BeforeSync = async ({ originalDoc, payload, searchDoc }) => {
   return { ...searchDoc, title, excerpt, slug, authors, topics, image, body }
 }
 
+// The collections build their own SEO tab, so keep them as they are. The
+// plugin still needs them listed: its generate endpoints refuse any other.
+const seo: Plugin = async (config) => ({
+  ...(await seoPlugin({
+    collections: ["articles", "pages", "volumes", "topics"],
+    generateTitle,
+    generateDescription,
+    generateURL,
+  })(config)),
+  collections: config.collections,
+})
+
 export const plugins: Plugin[] = [
   searchPlugin({
     collections: ["articles", "pages", "volumes", "topics"],
@@ -188,11 +200,7 @@ export const plugins: Plugin[] = [
     collections: ["categories"],
     generateURL: (docs) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ""),
   }),
-  seoPlugin({
-    generateTitle,
-    generateDescription,
-    generateURL,
-  }),
+  seo,
   formBuilderPlugin({
     fields: {
       payment: false,
