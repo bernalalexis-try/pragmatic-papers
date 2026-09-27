@@ -16,15 +16,15 @@ export const generateMeta = async (args: {
 
   const title = doc?.meta?.title ? doc?.meta?.title : "The Pragmatic Papers"
   const canonicalUrl = `${getServerSideURL()}${canonicalPath}`
-  const description = doc?.meta?.description || ""
+  const description = doc?.meta?.description || DEFAULT_DESCRIPTION
 
   return {
     alternates: {
       canonical: canonicalUrl,
     },
-    description: description || DEFAULT_DESCRIPTION,
+    description,
     openGraph: mergeOpenGraph({
-      ...(description ? { description } : {}),
+      description,
       images: ogImage
         ? [
             {
@@ -38,7 +38,7 @@ export const generateMeta = async (args: {
     twitter: {
       card: "summary_large_image",
       title,
-      description: description || undefined,
+      description,
       images: ogImage ? [ogImage] : undefined,
     },
     title,

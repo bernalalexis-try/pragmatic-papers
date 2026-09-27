@@ -65,7 +65,7 @@ describe("generateMeta", () => {
     expect(meta.twitter).toEqual({
       card: "summary_large_image",
       title: "The Pragmatic Papers",
-      description: undefined,
+      description: DEFAULT_DESCRIPTION,
       images: undefined,
     })
   })
@@ -85,6 +85,7 @@ describe("generateMeta", () => {
 
     expect(meta.openGraph?.description).toBe(DEFAULT_DESCRIPTION)
     expect(meta.description).toBe(DEFAULT_DESCRIPTION)
+    expect(meta.twitter).toMatchObject({ description: DEFAULT_DESCRIPTION })
   })
 
   it("uses the site image when the media has no og size", async () => {
