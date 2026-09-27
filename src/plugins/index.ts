@@ -139,6 +139,8 @@ const beforeSync: BeforeSync = async ({ originalDoc, payload, searchDoc }) => {
 
 // The collections build their own SEO tab, so keep them as they are. The
 // plugin still needs them listed: its generate endpoints refuse any other.
+// Drop this wrapper once plugin-seo can authorize without injecting fields:
+// https://github.com/payloadcms/payload/issues/18311
 const seo: Plugin = async (config) => ({
   ...(await seoPlugin({
     collections: ["articles", "pages", "volumes", "topics"],

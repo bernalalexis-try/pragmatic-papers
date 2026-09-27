@@ -32,6 +32,16 @@ const generate = async (field: "title" | "description", body: Record<string, unk
 }
 
 describe("SEO generate endpoints", () => {
+  it.each(["articles", "pages", "volumes", "topics"] as const)(
+    "leaves %s with only its own SEO fields",
+    (slug) => {
+      const meta = payload.collections[slug].config.flattenedFields.filter(
+        (field) => field.name === "meta",
+      )
+      expect(meta).toHaveLength(1)
+    },
+  )
+
   it("generates a title and description from a saved topic", async () => {
     const topic = await payload.create({
       collection: "topics",
